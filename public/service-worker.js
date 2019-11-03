@@ -1,0 +1,1 @@
+import("https://js.pusher.com/chatkit/service-worker.js");
