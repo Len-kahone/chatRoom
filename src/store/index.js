@@ -17,7 +17,8 @@ export default new Vuex.Store({
     messages:[],
     currentUser:"",
     reconnect: false,
-    userTyping: null
+    userTyping: null,
+    isLoading:false
   },
   mutations,
   actions,

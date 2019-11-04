@@ -1,6 +1,6 @@
 <template>
     <div class="user-list">
-      <h4>在线人员</h4>
+      <h5>在线人员</h5>
       <hr>
       <b-list-group>
         <b-list-group-item v-for="user in users" :key="user.username">
@@ -40,5 +40,8 @@
     .user-list{
       border-left: 1px solid #17a2b8;
       flex:1;
+      h5 {
+      text-align: center;
+    }
     }
   </style>

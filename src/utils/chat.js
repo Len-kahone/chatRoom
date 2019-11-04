@@ -1,16 +1,16 @@
-import Chatkit from '@pusher/chatkit-client'
+import Chatkit from '@pusher/chatkit-client';
 // import ChatServer from '@pusher/chatkit-server'
 const ChatServer = require('@pusher/chatkit-server');
-import store from '@/store/index'
-import moment from 'moment'
+import store from '@/store/index';
+import moment from 'moment';
 
-const INSTANCE_LOCATOR = process.env.VUE_APP_INSTANCE_LOCATOR
-const TOKEN_URL = process.env.VUE_APP_TOKEN_URL
-const MESSAGE_LIMIT = Number(process.env.VUE_APP_MESSAGE_LIMIT) || 10
+const INSTANCE_LOCATOR = process.env.VUE_APP_INSTANCE_LOCATOR;
+const TOKEN_URL = process.env.VUE_APP_TOKEN_URL;
+const MESSAGE_LIMIT = Number(process.env.VUE_APP_MESSAGE_LIMIT) || 10;
 
-let currentUser = null
-let activeRoom = null
-let chatServer = null
+let currentUser = null;
+let activeRoom = null;
+
 async function getConnection(userId) {
   const chatManager = new Chatkit.ChatManager({
     instanceLocator: INSTANCE_LOCATOR,
@@ -18,35 +18,38 @@ async function getConnection(userId) {
     tokenProvider: new Chatkit.TokenProvider({
       url: TOKEN_URL
     })
-  })
-  currentUser = await chatManager.connect()
+  });
+  currentUser = await chatManager.connect();
 
   currentUser
     .enablePushNotifications()
     .then(() => {
-      console.log('Push Notifications enabled')
+      console.log('Push Notifications enabled');
     })
     .catch(error => {
-      console.error('Push Notifications error:', error)
-    })
+      console.error('Push Notifications error:', error);
+    });
 
-  chatServer = new ChatServer.default({
-    instanceLocator: INSTANCE_LOCATOR,
-    key:
-      '27d362f3-2b81-4f60-8cf4-91a58770627a:Fdl0CR0f6CNZyyOaKV6KS2vmfqIv5C7ENj8puD+DId0='
-  })
-  chatServer.createUser({
-    id: 'kkkk',
-    name: 'kkkk',
-  })
-    .then(() => {
-      console.log('User created successfully');
-    }).catch((err) => {
-      console.log(err);
-    });  
+  // const chatkit = new ChatServer.default({
+  //   instanceLocator: 'v1:us1:10c8d7fe-2aa4-4114-a777-ab09c9744fd5',
+  //   key:
+  //     '27d362f3-2b81-4f60-8cf4-91a58770627a:Fdl0CR0f6CNZyyOaKV6KS2vmfqIv5C7ENj8puD+DId0='
+  // });
+
+  // chatkit
+  //   .createUser({
+  //     id: 'kkkkb',
+  //     name: 'kkkkb'
+  //   })
+  //   .then(() => {
+  //     console.log('User created successfully');
+  //   })
+  //   .catch(err => {
+  //     console.log(err);
+  //   });
   // Do other great things afterwards ✨
 
-  return currentUser
+  return currentUser;
 }
 function setMembers() {
   // console.log(activeRoom.users);
@@ -55,27 +58,26 @@ function setMembers() {
     username: user.id,
     name: user.name,
     presence: user.presence.state
-  }))
+  }));
 
-  store.commit('setUsers', members)
+  store.commit('setUsers', members);
 }
 async function connectToRoom(roomId) {
-  store.commit('clearChatRoom')
+  store.commit('clearChatRoom');
   activeRoom = await currentUser.subscribeToRoomMultipart({
     roomId: roomId,
     hooks: {
       onMessage: message => {
         let arr = message.parts.map(item => {
           if (item.partType == 'inline') {
-            return { text: item.payload.content }
+            return { text: item.payload.content };
           } else if (item.partType == 'url') {
-            return { img: item.payload.url }
+            return { img: item.payload.url };
           } else if (item.partType == 'attachment') {
-            return { img: item.payload._downloadURL }
+            return { img: item.payload._downloadURL };
           }
-        })
-       
-        
+        });
+
         store.commit('addMessage', {
           name: message.sender.name,
           id: message.senderId,
@@ -83,23 +85,23 @@ async function connectToRoom(roomId) {
           messageId: message.id,
           roomId: message.roomId,
           date: moment(message.createdAt).format()
-        })
+        });
       },
       onPresenceChanged: () => {
-        setMembers()
+        setMembers();
       },
       onUserStartedTyping: user => {
-        store.commit('setUserTyping', user.name)
+        store.commit('setUserTyping', user.name);
       },
       onUserStoppedTyping: () => {
-        store.commit('setUserTyping', null)
+        store.commit('setUserTyping', null);
       }
     },
     messageLimit: 10
-  })
+  });
 
-  setMembers()
-  return activeRoom
+  setMembers();
+  return activeRoom;
 }
 async function sendMessage(message) {
   const data = message.map(item => {
@@ -107,53 +109,54 @@ async function sendMessage(message) {
       return {
         file: item,
         customData: { metadata: 42 }
-      }
+      };
     } else {
-      return { type: 'text/plain', content: item }
+      return { type: 'text/plain', content: item };
     }
-  })
+  });
 
   const messageId = currentUser.sendMultipartMessage({
     roomId: store.state.activeRoom.id,
     parts: data
-  })
-  return messageId
+  });
+  return messageId;
 }
 
 async function disconnect() {
-  currentUser.disconnect()
+  currentUser.disconnect();
 }
 
 //删除消息
 async function deleteMessage({ roomId, messageId }) {
   // console.log(roomId,messageId);
   console.log(chatServer.deleteMessage);
-  
-  chatServer
-    .deleteMessage({
-      roomId,
-      messageId
-    })
-    // .then(() => console.log('gone forever'))
-    // .catch(err => console.error(err))
+
+  chatServer.deleteMessage({
+    roomId,
+    messageId
+  });
+  // .then(() => console.log('gone forever'))
+  // .catch(err => console.error(err))
 }
-async function changeName({id,name}){
-  chatServer.updateUser({
-    id,
-    name,
-    // avatarURL: 'https://some.url',
-    // customData: {
-    //   age: 21,
-    // },
-  })
+async function changeName({ id, name }) {
+  chatServer
+    .updateUser({
+      id,
+      name
+      // avatarURL: 'https://some.url',
+      // customData: {
+      //   age: 21,
+      // },
+    })
     .then(() => {
       console.log('User updated successfully');
-    }).catch((err) => {
+    })
+    .catch(err => {
       console.log(err);
     });
 }
 export function isTyping(roomId) {
-  currentUser.isTypingIn({ roomId })
+  currentUser.isTypingIn({ roomId });
 }
 export default {
   getConnection,
@@ -162,4 +165,4 @@ export default {
   disconnect,
   deleteMessage,
   changeName
-}
+};

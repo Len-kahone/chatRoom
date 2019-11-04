@@ -1,21 +1,21 @@
-export default{
-  setUser(state,user){
-    state.user=user
+export default {
+  setUser(state, user) {
+    state.user = user;
   },
-  setUsers(state,users){
-    state.users=users
+  setUsers(state, users) {
+    state.users = users;
   },
-  setRooms(state,rooms){
-    state.rooms=rooms
+  setRooms(state, rooms) {
+    state.rooms = rooms;
   },
-  setCurrentUser(state,currentUser){
-    state.currentUser=currentUser
+  setCurrentUser(state, currentUser) {
+    state.currentUser = currentUser;
   },
-  setActiveRoom(state,room){
-    state.activeRoom=room
+  setActiveRoom(state, room) {
+    state.activeRoom = room;
   },
-  addMessage(state,message){
-    state.messages.push(message)
+  addMessage(state, message) {
+    state.messages.push(message);
   },
   clearChatRoom(state) {
     state.users = [];
@@ -28,10 +28,12 @@ export default{
     state.reconnect = reconnect;
   },
   reset(state) {
-   
     state.users = [];
     state.messages = [];
     state.rooms = [];
     state.user = null;
+  },
+  setIsLoading(state, isLoading) {
+    state.isLoading = isLoading;
   }
-}
+};
