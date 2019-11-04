@@ -36,3 +36,9 @@
     },
   }
   </script>
+  <style lang="scss" >
+    .user-list{
+      border-left: 1px solid #17a2b8;
+      flex:1;
+    }
+  </style>

@@ -29,5 +29,7 @@
 <style lang="scss" scoped>
   .chatRoom{
    height: 100%;
+   display: flex;
+   flex-direction: column;
   }
 </style>

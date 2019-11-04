@@ -41,9 +41,9 @@
 <style lang="scss" scoped>
   .roomList {
     display: inline-block;
-    width: 300px;
+    flex:1;
     height: 100%;
-    border: 1px solid #17a2b8;
+    border-right: 1px solid #17a2b8;
     h3 {
       text-align: center;
     }
