@@ -51,11 +51,13 @@
     </div>
       <div class="edit">
         <el-input
+          autofocus
           placeholder="请输入内容"
           @keyup.native="isTyping"
           @keyup.enter.native="onSubmit"
           v-model="input"
           clearable
+          ref="inputMsg"
           :disabled="sending"
         >
           <!-- <input type="text "  @keydown.13="onSubmit" v-model="input"> -->
@@ -96,6 +98,7 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import { isTyping } from '@/utils/chat'
+import { log } from 'util'
 export default {
   components: {},
   data() {
@@ -115,6 +118,7 @@ export default {
   methods: {
     ...mapActions(['sendMessage', "deleteMessage"]),
     async onSubmit() {
+        this.$refs.inputMsg.focus()
       this.fileList = []
       if (this.input !== '') {
         this.input = this.input.trim()
@@ -131,6 +135,9 @@ export default {
         this.tips = '发送'
         this.input = ''
         this.allMessages = []
+        setTimeout(()=>{
+            this.$refs.inputMsg.focus()
+        },500)
       }
     },
     selectFile(e) {
@@ -201,6 +208,7 @@ export default {
         .message {
           color: gray;
         }
+        
       }
     }
     .messageBox.myself {
@@ -232,6 +240,10 @@ export default {
         }
         .message {
           color: gray;
+          img{
+            width: 100%;
+            
+          }
         }
       }
     }
